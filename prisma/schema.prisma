@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:root@localhost:3306/pokemone_database"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  UserName String
+  email    String @unique
+  password String
+  image    String
+
+  @@map("users")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  color     String    @unique
+  image     String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  price      Decimal   @db.Decimal(9, 2)
+  categoryId Int?
+  Category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  image      String?
+  payments   Payment[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("products")
+}
+
+model Payment {
+  id         Int       @id @default(autoincrement())
+  products   Product[]
+  details    Json
+  totalPrice Decimal   @db.Decimal(9, 2)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("payments")
+}
