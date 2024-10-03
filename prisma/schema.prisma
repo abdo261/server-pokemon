@@ -9,8 +9,10 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = "mysql://root:root@localhost:3306/pokemone_database"
+  // provider = "mysql"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  
 }
 
 model User {
