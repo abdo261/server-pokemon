@@ -14,11 +14,15 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  UserName String
-  email    String @unique
-  password String
-  image    String
+  id        Int      @id @default(autoincrement())
+  userName  String
+  email     String   @unique
+  password  String
+  imageFile String?
+  role      userRole @default(RESPONSABLE)
+  orders    Orders[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
@@ -27,33 +31,99 @@ model Category {
   id        Int       @id @default(autoincrement())
   name      String    @unique
   color     String    @unique
-  image     String?
+  imageFile String?
   products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique
-  price      Decimal   @db.Decimal(9, 2)
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  price      Float
+  isPublish  Boolean      @default(true)
+  type       ProductType?
   categoryId Int?
-  Category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  image      String?
+  category   Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  imageFile  String?
   payments   Payment[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Offer      Offer[]
 
   @@map("products")
 }
 
 model Payment {
-  id         Int       @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   products   Product[]
   details    Json
-  totalPrice Decimal   @db.Decimal(9, 2)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  totalPrice Decimal     @db.Decimal(9, 2)
+  isPayed    Boolean     @default(true)
+  isLocal    Boolean     @default(true)
+  type       PaymentType @default(NORMAL)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  order      Orders?
 
   @@map("payments")
+}
+
+enum PaymentType {
+  NORMAL @map("normal")
+  OFFRE  @map("offre")
+}
+
+model Orders {
+  id                 Int           @id @default(autoincrement())
+  status             PaymentStatus @default(EN_COURS_DE_PREPARATION)
+  clientPhoneNumber  String
+  delevryPhoneNumber String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  paymentId          Int           @unique
+  payment            Payment?      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  isAccepted         Boolean       @default(false)
+  delevryId          Int?
+  delevry            User?         @relation(fields: [delevryId], references: [id], onDelete: SetNull)
+
+  @@map("orders")
+}
+
+model Day {
+  id      Int       @id @default(autoincrement())
+  startAt DateTime  @default(now())
+  stopeAt DateTime?
+
+  @@map("days")
+}
+
+model Offer {
+  id        Int       @id @default(autoincrement())
+  products  Product[]
+  price     Decimal   @db.Decimal(9, 2)
+  imageFile String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("offers")
+}
+
+enum PaymentStatus {
+  EN_COURS_DE_PREPARATION @map("encoure de préparée")
+  RAMASSE                 @map("ramacé")
+  LIVREE                  @map("livrée")
+  REFUSE                  @map("refusé")
+}
+
+enum ProductType {
+  CHARBON @map("charbon")
+  PANINI  @map("panini")
+  FOUR    @map("four")
+}
+
+enum userRole {
+  ADMIN       @map("admin")
+  RESPONSABLE @map("responsable")
+  LIVREUR     @map("livreur")
 }

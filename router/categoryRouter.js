@@ -1,25 +1,29 @@
-
-
-const  {
+const {
   getAllCategories,
   getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
-  createManyCategories
-} =require('../controller/categoryController') 
+  createManyCategories,
+  getCategoriesWithCount,
+  getAllCategoriesWithProduct,
+} = require("../controller/categoryController");
+const { getLatestDay } = require("../controller/dayController");
+const { uploadCategory } = require("../middleware/upload");
 
-const categoryRouter = require('express').Router()
+const categoryRouter = require("express").Router();
 
-categoryRouter.get('/', getAllCategories)
+categoryRouter.get("/", getAllCategories);
+categoryRouter.get("/counts", getCategoriesWithCount);
+categoryRouter.get("/products", getAllCategoriesWithProduct);
 
-categoryRouter.get('/:id', getCategoryById)
+categoryRouter.get("/:id", getCategoryById);
 
-categoryRouter.post('/', createCategory)
-categoryRouter.post('/many', createManyCategories)
+categoryRouter.post("/many", createManyCategories);
+categoryRouter.post("/", uploadCategory.single("image"), createCategory);
 
-categoryRouter.put('/:id', updateCategory)
+categoryRouter.put("/:id", uploadCategory.single("image"), updateCategory);
 
-categoryRouter.delete('/:id', deleteCategory)
+categoryRouter.delete("/:id", deleteCategory);
 
-module.exports =  categoryRouter
+module.exports = categoryRouter;
