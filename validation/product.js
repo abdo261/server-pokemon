@@ -13,18 +13,26 @@ const ValidateCreateProduct = (product) => {
         "string.pattern.base":
           "Le nom doit commencer par une lettre et ne peut contenir que des lettres, des accents, des espaces, des apostrophes, des tirets, et des underscores.",
       }),
-      categoryId: Joi.alternatives()
+    categoryId: Joi.alternatives()
       .try(Joi.number().integer(), Joi.string().guid({ version: ["uuidv4"] }))
       .optional()
       .messages({
         "string.guid": "La catégorie doit être un identifiant UUID valide.",
-        "number.base": "La catégorie doit être un identifiant numérique valide.",
+        "number.base":
+          "La catégorie doit être un identifiant numérique valide.",
       }),
     price: Joi.number().positive().precision(2).required().messages({
       "number.base": "Le prix doit être un nombre.",
       "number.positive": "Le prix doit être un nombre positif.",
       "any.required": "Le prix est requis.",
     }),
+    type: Joi.string().allow(null)
+      .valid("CHARBON", "PANINI", "FOUR")
+      .optional()
+      .messages({
+        "any.only":
+          "Le type doit être l'un des types suivants : Charbon, Panini, Four.",
+      }),
     isPublish: Joi.boolean(),
     image: Joi.string().trim().uri().allow(null).optional().messages({
       "string.uri":

@@ -11,20 +11,26 @@ const imageRouter = require("./router/imageRouter");
 const paymentRouter = require("./router/paymentRouter");
 const dayRouter = require("./router/dayRouter");
 const offerRouter = require("./router/offerRouter");
+const paymentOfferRouter = require("./router/paymentOfferRouter");
+const paymentStatusRouter = require("./router/paymentCounts");
 // app.use((req, res, next) => {
 //   res.setHeader("Content-Security-Policy", "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:5000;");
 //   next();
 // });
-app.use(express.json());
-app.use(cors());
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : [];
+  console.log(allowedOrigins)
+app.use(express.json());
+app.use(cors());
+
 app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/images", imageRouter);
 app.use("/api/payments", paymentRouter);
+app.use("/api/payment/status", paymentStatusRouter);
+app.use("/api/paymentsOffer", paymentOfferRouter);
 app.use("/api/days", dayRouter);
 app.use("/api/offers", offerRouter);
 

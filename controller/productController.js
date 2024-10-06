@@ -1,8 +1,8 @@
 const prisma = require("../utils/db");
 const { ValidateCreateProduct } = require("../validation/product");
 const { deleteImage, renameImage } = require("./imageController");
-const path = require('path')
-const fs = require('fs')
+const path = require("path");
+const fs = require("fs");
 async function getAllProducts(req, res) {
   try {
     const products = await prisma.product.findMany({
@@ -50,7 +50,7 @@ async function getProductById(req, res) {
 
 // Create a New Product
 async function createProduct(req, res) {
-  const { name, price, categoryId, image, isPublish } = req.body;
+  const { name, price, categoryId, image, isPublish, type } = req.body;
   console.log(req.body);
   const { error } = ValidateCreateProduct({
     name,
@@ -58,6 +58,7 @@ async function createProduct(req, res) {
     categoryId,
     image,
     isPublish,
+    type,
   });
   if (error) {
     return res.status(400).json(error);
@@ -76,19 +77,21 @@ async function createProduct(req, res) {
     }
     let imagePath = null;
     if (req.file) {
-      imagePath = `/images/product/${req.file.filename}`; 
+      imagePath = `/images/product/${req.file.filename}`;
       console.log("File uploaded successfully:", imagePath); // Log success
     } else {
       console.log("No file uploaded."); // Log no file case
     }
+    console.log(type);
     // Create the product
     const product = await prisma.product.create({
       data: {
         name,
         price: parseFloat(price),
         categoryId: parseInt(categoryId) || undefined,
-        imageFile:imagePath,
-        isPublish:isPublish==='true',
+        imageFile: imagePath,
+        isPublish: isPublish === "true",
+        type,
       },
       include: {
         category: true,
@@ -114,14 +117,16 @@ async function createProduct(req, res) {
 // Update a Product by ID
 async function updateProduct(req, res) {
   const { id } = req.params;
-  const { name, price, categoryId, image, isPublish,imageFile } = req.body;
-  const newIsPublish = isPublish ==="true"
+  const { name, price, categoryId, image, isPublish, imageFile, type } =
+    req.body;
+  const newIsPublish = isPublish === "true";
   const { error } = ValidateCreateProduct({
     name,
     price,
     categoryId,
     image,
-    isPublish:newIsPublish,
+    isPublish: newIsPublish,
+    
   });
 
   if (error) {
@@ -154,13 +159,24 @@ async function updateProduct(req, res) {
       if (existingProduct.imageFile) {
         await deleteImage(existingProduct.imageFile);
       }
-      imagePath = `/images/product/${name}${path.extname(req.file.originalname)}`;
-      await fs.promises.rename(req.file.path, path.join(__dirname, '..', imagePath));
-    } else if (name && name !== existingProduct.name && existingProduct.imageFile) {
+      imagePath = `/images/product/${name}${path.extname(
+        req.file.originalname
+      )}`;
+      await fs.promises.rename(
+        req.file.path,
+        path.join(__dirname, "..", imagePath)
+      );
+    } else if (
+      name &&
+      name !== existingProduct.name &&
+      existingProduct.imageFile
+    ) {
       const oldImagePath = existingProduct.imageFile;
-      const newImagePath = `/images/product/${name}${path.extname(oldImagePath)}`;
+      const newImagePath = `/images/product/${name}${path.extname(
+        oldImagePath
+      )}`;
       if (oldImagePath !== newImagePath) {
-        await renameImage(oldImagePath,  newImagePath);
+        await renameImage(oldImagePath, newImagePath);
         imagePath = newImagePath; // Update to the new image path
       }
     } else if (req.body.imageFile === "null" && existingProduct.imageFile) {
@@ -173,9 +189,10 @@ async function updateProduct(req, res) {
       data: {
         name,
         price: parseFloat(price),
-        categoryId:parseInt(categoryId),
-        imageFile:imagePath,
-        isPublish:newIsPublish,
+        categoryId: parseInt(categoryId),
+        imageFile: imagePath,
+        isPublish: newIsPublish,
+        type:(type ==="null" || !type) ? null : type,
       },
       include: {
         category: true,
@@ -192,7 +209,7 @@ async function updateProduct(req, res) {
       product,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       message: "Erreur lors de la mise à jour du produit: " + error.message,
     });
@@ -221,7 +238,6 @@ async function deleteProduct(req, res) {
 
     res.status(200).json({ message: "Produit supprimé avec succès" });
   } catch (error) {
-    
     res.status(500).json({
       message: "Erreur lors de la suppression du produit: " + error.message,
     });

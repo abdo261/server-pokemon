@@ -20,6 +20,13 @@ const ValidateCreateUser = (user) => {
     password: Joi.string().trim().min(6).required().messages({
       "string.min": "Le mot de passe doit comporter au moins 6 caractères.",
       "string.empty": "Le mot de passe est requis.",
+    }),phone: Joi.string()
+    .trim()
+    .required()
+    .pattern(/^(0|\+212)[\d]{9}$/)
+    .messages({
+      "string.empty": "Le numéro de téléphone est requis.",
+      "string.pattern.base": "Le numéro de téléphone doit commencer par 0 ou +212 et contenir 9 chiffres supplémentaires.",
     }),
     image: Joi.string().uri().optional().allow(null).messages({
       "string.uri": "L'URL de l'image doit être valide (commençant par http ou https).",
@@ -69,6 +76,12 @@ const ValidateUpdateUser = (user) => {
     }),
     image: Joi.string().uri().optional().allow(null).messages({
       "string.uri": "L'URL de l'image doit être valide (commençant par http ou https).",
+    }),phone: Joi.string()
+    .trim()
+    .optional()
+    .pattern(/^(0|\+212)[\d]{9}$/)
+    .messages({
+      "string.pattern.base": "Le numéro de téléphone doit commencer par 0 ou +212 et contenir 9 chiffres supplémentaires.",
     }),
     role: Joi.string().valid('ADMIN', 'RESPONSABLE', 'LIVREUR').optional(),
   });

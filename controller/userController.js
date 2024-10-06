@@ -1,5 +1,8 @@
 const prisma = require("../utils/db");
-const { ValidateCreateUser, ValidateUpdateUser } = require("../validation/user");
+const {
+  ValidateCreateUser,
+  ValidateUpdateUser,
+} = require("../validation/user");
 
 // Get All Users
 async function getAllUsers(req, res) {
@@ -11,6 +14,7 @@ async function getAllUsers(req, res) {
         email: true,
         imageFile: true,
         role: true,
+        phone: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -25,7 +29,6 @@ async function getAllUsers(req, res) {
   }
 }
 
-
 async function getUserById(req, res) {
   const { id } = req.params;
   try {
@@ -37,6 +40,7 @@ async function getUserById(req, res) {
         email: true,
         imageFile: true,
         role: true,
+        phone: true,
       },
     });
     if (!user) {
@@ -53,13 +57,14 @@ async function getUserById(req, res) {
 
 // Create a New User
 async function createUser(req, res) {
-  const { userName, email, password, imageFile, role ,image} = req.body;
+  const { userName, email, password, imageFile, role, image, phone } = req.body;
   const { error } = ValidateCreateUser({
     userName,
     email,
     password,
     image,
     role,
+    phone,
   });
   if (error) {
     return res.status(400).json(error);
@@ -80,6 +85,7 @@ async function createUser(req, res) {
         password,
         imageFile,
         role,
+        phone,
       },
     });
     res.status(201).json({
@@ -96,13 +102,13 @@ async function createUser(req, res) {
 // Update a User by ID
 async function updateUser(req, res) {
   const { id } = req.params;
-  const { userName, email, password, imageFile, role } = req.body;
+  const { userName, email, password, imageFile, role, phone } = req.body;
   const { error } = ValidateUpdateUser({
     userName,
     email,
-    password : password ? password :undefined ,
-    imageFile,
+    password: password ? password : undefined,
     role,
+    phone,
   });
   if (error) {
     return res.status(400).json(error);
@@ -136,6 +142,7 @@ async function updateUser(req, res) {
         password,
         imageFile,
         role,
+        phone,
       },
     });
 

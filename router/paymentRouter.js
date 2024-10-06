@@ -5,11 +5,15 @@ const {
   createPayment,
   updatePayment,
   deletePayment,
+  getAllLocalPayments,
+  getEnlinePayments
 } = require("../controller/paymentController");
 
 const paymentRouter = express.Router();
 
 paymentRouter.get("/", getAllPayments);
+paymentRouter.get("/enline", getEnlinePayments);
+paymentRouter.get("/locale", getAllLocalPayments);
 paymentRouter.get("/:id", getPaymentById);
 paymentRouter.post("/", createPayment);
 paymentRouter.put("/:id", updatePayment);

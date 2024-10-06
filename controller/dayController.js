@@ -5,13 +5,13 @@ async function getAllDays(req, res) {
   try {
     const days = await prisma.day.findMany({
       orderBy: {
-        startAt: "desc", 
+        startAt: "desc",
       },
     });
     res.status(200).json(days);
   } catch (error) {
     res.status(500).json({
-      message: "Error retrieving days: " + error.message,
+      message: "Erreur lors de la récupération des journées : " + error.message,
     });
   }
 }
@@ -24,12 +24,12 @@ async function getDayById(req, res) {
       where: { id: parseInt(id) },
     });
     if (!day) {
-      return res.status(404).json({ message: "Day not found" });
+      return res.status(404).json({ message: "Journée non trouvée" });
     }
     res.status(200).json(day);
   } catch (error) {
     res.status(500).json({
-      message: "Error retrieving the day: " + error.message,
+      message: "Erreur lors de la récupération de la journée : " + error.message,
     });
   }
 }
@@ -46,12 +46,12 @@ async function createDay(req, res) {
       },
     });
     res.status(201).json({
-      message: `Day created successfully`,
+      message: "Journée créée avec succès",
       day,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error creating the day: " + error.message,
+      message: "Erreur lors de la création de la journée : " + error.message,
     });
   }
 }
@@ -67,7 +67,7 @@ async function updateDay(req, res) {
     });
 
     if (!existingDay) {
-      return res.status(404).json({ message: "Day not found" });
+      return res.status(404).json({ message: "Journée non trouvée" });
     }
 
     const updatedDay = await prisma.day.update({
@@ -79,13 +79,13 @@ async function updateDay(req, res) {
     });
 
     res.status(200).json({
-      message: "Day updated successfully",
+      message: "Journée mise à jour avec succès",
       day: updatedDay,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
-      message: "Error updating the day: " + error.message,
+      message: "Erreur lors de la mise à jour de la journée : " + error.message,
     });
   }
 }
@@ -100,45 +100,43 @@ async function deleteDay(req, res) {
     });
 
     if (!existingDay) {
-      return res.status(404).json({ message: "Day not found" });
+      return res.status(404).json({ message: "Journée non trouvée" });
     }
 
     await prisma.day.delete({
       where: { id: parseInt(id) },
     });
 
-    res.status(200).json({ message: "Day deleted successfully" });
+    res.status(200).json({ message: "Journée supprimée avec succès" });
   } catch (error) {
     res.status(500).json({
-      message: "Error deleting the day: " + error.message,
+      message: "Erreur lors de la suppression de la journée : " + error.message,
     });
   }
 }
+
+// Get Latest Day
 async function getLatestDay(req, res) {
-    try {
-      const latestDay = await prisma.day.findFirst({
-        orderBy: {
-          startAt: "desc", 
-        },
-      });
-      
-      if (!latestDay) {
-        return res.status(404).json({ message: "No days found" });
-      }
-      
-      res.status(200).json(latestDay);
-    } catch (error) {
-        
-      res.status(500).json({
-        message: "Error retrieving the latest day: " + error.message,
-      });
-    }
+  try {
+    const latestDay = await prisma.day.findFirst({
+      orderBy: {
+        startAt: "desc",
+      },
+    });
+
+    res.status(200).json(latestDay);
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors de la récupération de la dernière journée : " + error.message,
+    });
   }
+}
+
 module.exports = {
   getAllDays,
   getDayById,
   createDay,
   updateDay,
   deleteDay,
-  getLatestDay
+  getLatestDay,
 };

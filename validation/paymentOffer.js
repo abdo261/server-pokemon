@@ -1,22 +1,21 @@
 const Joi = require("joi");
 
-const ValidateCreatePayment = (payment) => {
+const ValidateCreatePaymentOffer = (paymentOffer) => {
   const schema = Joi.object({
-   
+    offersIds: Joi.array().items(Joi.number()).min(1).required().messages({
+      "array.base": "Offers must be an array.",
+      "array.min": "At least one offer ID is required.",
+      "any.required": "Offer IDs are required.",
+    }),
     totalePrice: Joi.number().required().greater(0).messages({
       "number.base": "Total price must be a number.",
       "number.greater": "Total price must be greater than zero.",
+      "any.required": "Total price is required.",
     }),
     isPayed: Joi.boolean().optional(),
-    isLocal: Joi.boolean().optional(),
-    productsIds: Joi.array().items(Joi.number()).min(1).required().messages({
-      "array.base": "Products must be an array.",
-      "array.min": "At least one product ID is required.",
-      "any.required": "Product IDs are required.",
-    }),
   });
 
-  const { error, value } = schema.validate(payment, { abortEarly: false });
+  const { error, value } = schema.validate(paymentOffer, { abortEarly: false });
 
   return {
     error: error
@@ -34,4 +33,4 @@ const ValidateCreatePayment = (payment) => {
   };
 };
 
-module.exports = { ValidateCreatePayment };
+module.exports = { ValidateCreatePaymentOffer };

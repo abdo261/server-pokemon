@@ -14,7 +14,7 @@ const storageCategory = multer.diskStorage({
 });
 const uploadCategory = multer({
   storage: storageCategory,
-  limits: { fileSize: 1024 * 1024 * 5 }, 
+  limits: { fileSize: 1024 * 1024 * 20 },
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png|gif/;
     const extname = filetypes.test(
@@ -49,7 +49,7 @@ const storageProduct = multer.diskStorage({
 // Multer instance for product uploads
 const uploadProduct = multer({
   storage: storageProduct,
-  limits: { fileSize: 1024 * 1024 * 5 }, 
+  limits: { fileSize: 1024 * 1024 * 20 },
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png|gif/;
     const extname = filetypes.test(
@@ -69,31 +69,49 @@ const uploadProduct = multer({
     }
   },
 });
+// const storageOffer = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     const dir = path.join(__dirname, "../images/offer");
+//     cb(null, dir);
+//   },
+//   filename: (req, file, cb) => {
+//     const timestamp = Date.now();
+//     const ext = path.extname(file.originalname);
+//     cb(null, `offer_${timestamp}${ext}`); // Use the timestamp in the filename
+//   },
+// });
 const storageOffer = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, "../images/offer");
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    const timestamp = Date.now(); 
+    const offerName = req.body.name;
     const ext = path.extname(file.originalname);
-    cb(null, `offer_${timestamp}${ext}`); // Use the timestamp in the filename
+    cb(null, `${offerName}${ext}`);
   },
 });
 
 const uploadOffer = multer({
   storage: storageOffer,
-  limits: { fileSize: 1024 * 1024 * 5 }, // Limit file size to 5MB
+  limits: { fileSize: 1024 * 1024 * 20 },
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = filetypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
     const mimetype = filetypes.test(file.mimetype);
 
     if (mimetype && extname) {
       return cb(null, true);
     } else {
-      cb(new Error("Error: File upload only supports the following filetypes - " + filetypes));
+      cb(
+        new Error(
+          "Error: File upload only supports the following filetypes - " +
+            filetypes
+        )
+      );
     }
   },
 });
-module.exports = { uploadCategory, uploadProduct,uploadOffer};
+module.exports = { uploadCategory, uploadProduct, uploadOffer };
