@@ -22,7 +22,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   : [];
   console.log(allowedOrigins)
 app.use(express.json());
-app.use(cors());
+app.use(cors({origin:allowedOrigins}));
 
 app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
