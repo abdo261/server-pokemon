@@ -1,5 +1,8 @@
 const prisma = require("../utils/db");
-const { ValidateCreatePaymentOffer } = require("../validation/paymentOffer");
+const {
+  ValidateCreatePaymentOffer,
+  ValidateUpdatePaymentOffer,
+} = require("../validation/paymentOffer");
 
 // Get All PaymentOffers
 async function getAllPaymentOffers(req, res) {
@@ -13,6 +16,7 @@ async function getAllPaymentOffers(req, res) {
         createdAt: "desc",
       },
     });
+    console.log(paymentOffers);
     res.status(200).json(paymentOffers);
   } catch (error) {
     res
@@ -86,13 +90,24 @@ async function getPaymentOfferById(req, res) {
 
 // Create PaymentOffer
 async function createPaymentOffer(req, res) {
-  const { offersIds, totalePrice, isPayed,details } = req.body;
-
+  const {
+    offersIds,
+    totalePrice,
+    isPayed,
+    details,
+    delevryPrice,
+    clientPhoneNumber,
+    delevryId,
+    isDelevry,
+  } = req.body;
+console.log(isDelevry)
   const { error } = ValidateCreatePaymentOffer({
     offersIds,
     totalePrice,
     isPayed,
-  });
+    clientPhoneNumber,
+    delevryId:parseInt(delevryId)
+  },{isDelevry:isDelevry});
   if (error) {
     return res.status(400).json(error);
   }
@@ -104,7 +119,11 @@ async function createPaymentOffer(req, res) {
         isPayed,
         offers: {
           connect: offersIds.map((o) => ({ id: o })),
-        },details:JSON.stringify(details)
+        },
+        details: JSON.stringify(details),
+        delevryPrice,
+        clientPhoneNumber,
+        delevryId,
       },
       include: {
         offers: true,
@@ -124,9 +143,9 @@ async function createPaymentOffer(req, res) {
 // Update PaymentOffer
 async function updatePaymentOffer(req, res) {
   const { id } = req.params;
-  const { offersIds, totalePrice, isPayed,details} = req.body;
-
-  const { error } = ValidateCreatePaymentOffer({
+  const { totalePrice, isPayed, details } = req.body;
+  const offersIds = details ? details.map((e) => e.id) : [];
+  const { error } = ValidateUpdatePaymentOffer({
     offersIds,
     totalePrice,
     isPayed,
@@ -141,9 +160,10 @@ async function updatePaymentOffer(req, res) {
       data: {
         totalePrice,
         isPayed,
-        offers: {
-          set: offersIds.map((o) => ({ id: o })),
-        },details:JSON.stringify(details)
+        // offers: {
+        //   set: offersIds.map((o) => ({ id: o })),
+        // },
+        details: details ? JSON.stringify(details) : undefined,
       },
       include: {
         offers: true,

@@ -1,5 +1,8 @@
 const prisma = require("../utils/db");
-const { ValidateCreatePayment } = require("../validation/payment");
+const {
+  ValidateCreatePayment,
+  ValidateUpdatePayment,
+} = require("../validation/payment");
 
 // Get All Payments
 async function getAllPayments(req, res) {
@@ -7,7 +10,7 @@ async function getAllPayments(req, res) {
     const payments = await prisma.payment.findMany({
       include: {
         products: true,
-        order:true
+        order: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -75,11 +78,27 @@ async function getPaymentById(req, res) {
 
 // Create Payment
 async function createPayment(req, res) {
-  const { details, totalePrice, isPayed, productsIds } = req.body;
+  const {
+    details,
+    totalePrice,
+    isPayed,
+    productsIds,
+    clientPhoneNumber,
+    delevryId,
+    delevryPrice,
+    isDelevry,
+  } = req.body;
 
-  const { error } = ValidateCreatePayment({
-    totalePrice, isPayed, productsIds
-  });
+  const { error } = ValidateCreatePayment(
+    {
+      totalePrice,
+      isPayed,
+      productsIds,
+      clientPhoneNumber,
+      delevryId: parseInt(delevryId),
+    },
+    { isDelevry }
+  );
   if (error) {
     return res.status(400).json(error);
   }
@@ -90,10 +109,12 @@ async function createPayment(req, res) {
         details: JSON.stringify(details),
         totalePrice,
         isPayed,
-
+        clientPhoneNumber,
+        delevryId: parseInt(delevryId),
         products: {
           connect: productsIds.map((p) => ({ id: p })),
         },
+        delevryPrice: delevryPrice,
       },
     });
     res.status(201).json({ message: "Payment created successfully", payment });
@@ -108,11 +129,11 @@ async function createPayment(req, res) {
 async function updatePayment(req, res) {
   const { id } = req.params;
   const { details, totalePrice, isPayed } = req.body;
-
-  const { error } = ValidateCreatePayment({
-    details,
+  productsIds = details ? details.map((e) => parseInt(p.id)) : [];
+  const { error } = ValidateUpdatePayment({
     totalePrice,
     isPayed,
+    productsIds,
   });
   if (error) {
     return res.status(400).json(error);
@@ -122,10 +143,10 @@ async function updatePayment(req, res) {
     const updatedPayment = await prisma.payment.update({
       where: { id: parseInt(id) },
       data: {
-        details: JSON.stringify(details),
-        totalePrice,
+        details: details ? JSON.stringify(details) : undefined,
         isPayed,
       },
+      include: { products: true, order: true },
     });
     res.status(200).json({
       message: "Payment updated successfully",

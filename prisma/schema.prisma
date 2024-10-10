@@ -15,16 +15,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  userName  String
-  email     String   @unique
-  password  String
-  phone     String
-  imageFile String?
-  role      userRole @default(RESPONSABLE)
-  order     Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  userName      String
+  email         String         @unique
+  password      String
+  phone         String
+  imageFile     String?
+  role          userRole       @default(RESPONSABLE)
+  orderProducts Payment[]
+  orderOffers   PaymentOffer[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@map("users")
 }
@@ -43,7 +44,7 @@ model Category {
 
 model Product {
   id         Int          @id @default(autoincrement())
-  name       String       @unique
+  name       String       
   price      Float
   isPublish  Boolean      @default(true)
   type       ProductType?
@@ -59,46 +60,50 @@ model Product {
 }
 
 model Payment {
-  id          Int       @id @default(autoincrement())
-  products    Product[]
-  details     Json
-  totalePrice Decimal   @db.Decimal(9, 2)
-  isPayed     Boolean   @default(true)
-  order       Order?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                Int       @id @default(autoincrement())
+  products          Product[]
+  details           Json
+  totalePrice       Decimal   @db.Decimal(9, 2)
+  isPayed           Boolean   @default(true)
+  delevryPrice      Decimal?  @db.Decimal(4, 2)
+  clientPhoneNumber String?
+  delevryId         Int?
+  delevry           User?     @relation(fields: [delevryId], references: [id], onDelete: SetNull)
+  order             Order?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@map("payments")
 }
 
 model Order {
-  id                 Int           @id @default(autoincrement())
-  status             Ordertatus    @default(EN_COURS_DE_PREPARATION)
-  clentName          String
-  clientPhoneNumber  String
-  delevryPhoneNumber String
-  paymentId          Int?          @unique
-  payment            Payment?      @relation(fields: [paymentId], references: [id])
-  paymentOfferId     Int?          @unique
-  paymentOffer       PaymentOffer? @relation(fields: [paymentOfferId], references: [id])
-  isAccepted         Boolean       @default(false)
-  delevryId          Int?
-  delevry            User?         @relation(fields: [delevryId], references: [id], onDelete: SetNull)
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  id             Int           @id @default(autoincrement())
+  status         Ordertatus    @default(EN_COURS_DE_PREPARATION)
+  paymentId      Int?          @unique
+  payment        Payment?      @relation(fields: [paymentId], references: [id])
+  paymentOfferId Int?          @unique
+  paymentOffer   PaymentOffer? @relation(fields: [paymentOfferId], references: [id])
+  isAccepted     Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("orders")
 }
 
 model PaymentOffer {
-  id          Int      @id @default(autoincrement())
-  offers      Offer[]
-  totalePrice Decimal  @db.Decimal(9, 2)
-  isPayed     Boolean  @default(true)
-  details     Json 
-  order       Order?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                Int      @id @default(autoincrement())
+  offers            Offer[]
+  details           Json
+  isPayed           Boolean  @default(true)
+  totalePrice       Decimal  @db.Decimal(9, 2)
+  delevryPrice      Decimal? @db.Decimal(4, 2)
+  clientPhoneNumber String?
+  delevryId         Int?
+  delevry           User?    @relation(fields: [delevryId], references: [id], onDelete: SetNull)
+  order             Order?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("payment_offer")
 }

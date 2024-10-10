@@ -8,9 +8,16 @@ const fs = require("fs");
 async function getAllOffers(req, res) {
   try {
     const offers = await prisma.offer.findMany({
-      include: { products: true },
+      include: { products: {select:{
+        name:true ,
+         category:{
+          select:{name:true}
+         },
+         type:true
+      }}, },
       orderBy: { createdAt: "desc" },
     });
+    console.log(offers)
     res.status(200).json(offers);
   } catch (error) {
     res
