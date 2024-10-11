@@ -73,7 +73,7 @@ async function getDayById(req, res) {
             createdAt: {
               gte: day.startAt,
               ...(day.stopeAt ? { lte: day.stopeAt } : {}),
-            },
+            },isPayed: true,
           },
           include: {
             order: true,
@@ -84,7 +84,7 @@ async function getDayById(req, res) {
             createdAt: {
               gte: day.startAt,
               ...(day.stopeAt ? { lte: day.stopeAt } : {}),
-            },
+            },isPayed:true
           },
           include: {
             order: true, // Include delivery details in orders as well

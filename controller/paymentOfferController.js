@@ -13,7 +13,7 @@ async function getAllPaymentOffers(req, res) {
         order: true,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
     console.log(paymentOffers);
@@ -35,7 +35,7 @@ async function getLocalPaymentsOffer(req, res) {
         order: true,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
     res.status(200).json(payments);
@@ -56,7 +56,7 @@ async function getEnlinePaymentsOffer(req, res) {
         order: true,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
     res.status(200).json(payments);

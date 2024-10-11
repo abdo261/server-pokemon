@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 const { getDiskInfo } = require('node-disk-info');
 const os = require('os');
 require("dotenv").config();
+const jwt = require('jsonwebtoken')
 const categoryRouter = require("./router/categoryRouter");
 const productRouter = require("./router/productRouter");
 const userRouter = require("./router/userRouter");
@@ -16,6 +17,7 @@ const offerRouter = require("./router/offerRouter");
 const paymentOfferRouter = require("./router/paymentOfferRouter");
 const paymentStatusRouter = require("./router/paymentCounts");
 const authRouter = require("./router/auth");
+const authenticateJWT = require("./middleware/authenticateJWT");
 // app.use((req, res, next) => {
 //   res.setHeader("Content-Security-Policy", "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:5000;");
 //   next();
@@ -24,8 +26,16 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : [];
   console.log(allowedOrigins)
-app.use(express.json());
-app.use(cors({origin:allowedOrigins}));
+  app.use(cors({origin:allowedOrigins}));
+  app.use((req, res, next) => {
+    const excludedRoutes = ["/api/auth/login"];
+    console.log(req.path)
+    if (excludedRoutes.includes(req.path)) {
+      return next(); 
+    }
+    authenticateJWT(req, res, next);
+  });
+  app.use(express.json());
 
 app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
@@ -47,12 +57,55 @@ const io = new Server(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("A user connected with id:", socket.id);
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+
+const connectedClients = []; 
+const socketToUserMap = {}; 
+
+io.on('connection', (socket) => {
+
+  socket.on('conectCLintId', (token) => {
+    try {
+
+      const decoded = jwt.verify(token, process.env.SUCRET_KEY || 'secretkey');
+      const userId = decoded.id;
+
+
+      if (!connectedClients.includes(userId)) {
+        connectedClients.push(userId);
+      }
+
+      socketToUserMap[socket.id] = userId;
+
+      console.log(`User connected: ${userId}`);
+      
+  
+      io.emit('connectedClients', connectedClients);
+
+    } catch (err) {
+      console.error('Token verification failed:', err);
+    }
+  });
+
+  socket.on('disconnect', () => {
+
+    const userId = socketToUserMap[socket.id];
+
+    if (userId) {
+
+      const index = connectedClients.indexOf(userId);
+      if (index !== -1) {
+        connectedClients.splice(index, 1);
+        console.log(`User disconnected: ${userId}`);
+      }
+     
+      delete socketToUserMap[socket.id];
+    }
+
+   
+    io.emit('connectedClients', connectedClients);
   });
 });
+
 app.get('/storage', async (req, res) => {
   try {
     // Get the disk information

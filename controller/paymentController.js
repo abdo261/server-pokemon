@@ -13,7 +13,7 @@ async function getAllPayments(req, res) {
         order: true,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
     res.status(200).json(payments);
@@ -28,7 +28,7 @@ async function getAllLocalPayments(req, res) {
     const payments = await prisma.payment.findMany({
       where: { order: null },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
     res.status(200).json(payments);
@@ -45,7 +45,7 @@ async function getEnlinePayments(req, res) {
         order: { not: null },
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
     res.status(200).json(payments);
