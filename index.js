@@ -25,11 +25,11 @@ const authenticateJWT = require("./middleware/authenticateJWT");
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : [];
-  console.log(allowedOrigins)
+ 
   app.use(cors({origin:allowedOrigins}));
   app.use((req, res, next) => {
     const excludedRoutes = ["/api/auth/login"];
-    console.log(req.path)
+   
     if (excludedRoutes.includes(req.path)) {
       return next(); 
     }
@@ -76,7 +76,7 @@ io.on('connection', (socket) => {
 
       socketToUserMap[socket.id] = userId;
 
-      console.log(`User connected: ${userId}`);
+     
       
   
       io.emit('connectedClients', connectedClients);
@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
       const index = connectedClients.indexOf(userId);
       if (index !== -1) {
         connectedClients.splice(index, 1);
-        console.log(`User disconnected: ${userId}`);
+     
       }
      
       delete socketToUserMap[socket.id];

@@ -164,7 +164,7 @@ async function updateDay(req, res) {
       day: updatedDay,
     });
   } catch (error) {
-    console.log(error);
+    
     res.status(500).json({
       message: "Erreur lors de la mise à jour de la journée : " + error.message,
     });
@@ -244,7 +244,7 @@ const countAllPaymentsForDay = async (req, res) => {
     }
 
     const { startAt, stopeAt } = day;
-    console.log(startAt);
+   
     // Prepare the filter for createdAt based on the presence of stopeAt
     const dateFilter = {
       gte: startAt, // Start date filter
@@ -402,7 +402,6 @@ const countAllPaymentsForDay = async (req, res) => {
     // Send the response
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error counting payments for day:", error.message);
     res
       .status(500)
       .json({ error: "An error occurred while counting payments for the day" });
@@ -425,7 +424,7 @@ const countAllPaymentsWithDayRange = async (req, res) => {
     const { startAt, stopeAt } = day; // Get day range from query parameters
 
     const dateFilter = getDateRangeFilter(startAt, stopeAt); // Apply the date range filter
-    console.log(new Date(startAt));
+   
     // Count offline payments for products
     const countPaymentProductsOffline = await prisma.payment.count({
       where: {
@@ -434,7 +433,7 @@ const countAllPaymentsWithDayRange = async (req, res) => {
         createdAt: dateFilter,
       },
     });
-    console.log(countPaymentProductsOffline);
+
     // Count offline payments for offers
     const countPaymentOffersOffline = await prisma.paymentOffer.count({
       where: {
@@ -501,7 +500,6 @@ const countAllPaymentsWithDayRange = async (req, res) => {
       returnedOrders: returnOrders,
     });
   } catch (error) {
-    console.error("Error counting payments:", error.message);
     res
       .status(500)
       .json({ error: "An error occurred while counting payments" });
@@ -613,7 +611,6 @@ const countAllPaymentsForDateRangeWithQ = async (req, res) => {
     // Send the response
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error counting payments for the day:", error.message);
     res
       .status(500)
       .json({ error: "An error occurred while counting payments for the day" });
@@ -775,7 +772,6 @@ const countAllPaymentsForDateRangeWithQ = async (req, res) => {
 //       },
 //     });
 //   } catch (error) {
-//     console.error("Error counting payments:", error.message);
 //     res
 //       .status(500)
 //       .json({ error: "An error occurred while counting payments" });

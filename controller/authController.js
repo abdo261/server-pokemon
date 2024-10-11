@@ -45,7 +45,7 @@ async function loginUser(req, res) {
     );
 
     const sanitizedUser = sanitizeUser(user);
-    console.log(sanitizedUser)
+    
     return res.status(200).json({
       message: "Connexion réussie",
       token,

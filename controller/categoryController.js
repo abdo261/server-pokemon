@@ -69,7 +69,7 @@ async function getCategoryById(req, res) {
 
 async function createCategory(req, res) {
   const { name, color } = req.body;
-  console.log(req.body);
+ 
 
   // Validate
   const { error } = ValidateCreateCategory({ name, color });
@@ -123,7 +123,7 @@ async function updateCategory(req, res) {
   const { id } = req.params;
   const { name, color, imageFile } = req.body; // imageFile can be 'null'
   const image = req.file;
-  console.log("Image:", image);
+ 
   const { error } = ValidateCreateCategory({ name, color });
   if (error) {
     return res.status(400).json(error);
@@ -208,7 +208,7 @@ async function updateCategory(req, res) {
       category: updatedCategory,
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       message:
         "Erreur lors de la mise à jour de la catégorie: " + error.message,
@@ -301,7 +301,7 @@ const getCategoriesWithCount = async (req, res) => {
 
     res.json(categoriesWithCount);
   } catch (error) {
-    console.error(error);
+  
     res.status(500).json({
       error: "Une erreur est survenue lors de la récupération des catégories.",
     });
