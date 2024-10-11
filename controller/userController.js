@@ -3,7 +3,7 @@ const {
   ValidateCreateUser,
   ValidateUpdateUser,
 } = require("../validation/user");
-
+const bcryptjs = require("bcryptjs");
 // Get All Users
 async function getAllUsers(req, res) {
   try {
@@ -77,12 +77,12 @@ async function createUser(req, res) {
     if (existingUserByEmail) {
       return res.status(400).json({ email: ["Cet email est déjà utilisé"] });
     }
-
+    const hashPasss = await bcryptjs.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         userName,
         email,
-        password,
+        password: hashPasss,
         imageFile,
         role,
         phone,
@@ -132,14 +132,17 @@ async function updateUser(req, res) {
         return res.status(400).json({ email: ["Cet email est déjà utilisé"] });
       }
     }
-
+    let hashPasss = null;
+    if (password) {
+      hashPasss = await bcryptjs.hash(password, 10);
+    }
     // Update the user with new data
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
       data: {
         userName,
         email,
-        password,
+        password: hashPasss ? hashPasss : undefined,
         imageFile,
         role,
         phone,

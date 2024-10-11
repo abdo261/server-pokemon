@@ -15,6 +15,7 @@ const dayRouter = require("./router/dayRouter");
 const offerRouter = require("./router/offerRouter");
 const paymentOfferRouter = require("./router/paymentOfferRouter");
 const paymentStatusRouter = require("./router/paymentCounts");
+const authRouter = require("./router/auth");
 // app.use((req, res, next) => {
 //   res.setHeader("Content-Security-Policy", "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:5000;");
 //   next();
@@ -35,6 +36,7 @@ app.use("/api/payment/status", paymentStatusRouter);
 app.use("/api/paymentsOffer", paymentOfferRouter);
 app.use("/api/days", dayRouter);
 app.use("/api/offers", offerRouter);
+app.use("/api/auth", authRouter);
 
 const server = http.createServer(app);
 
