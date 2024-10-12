@@ -8,16 +8,20 @@ const fs = require("fs");
 async function getAllOffers(req, res) {
   try {
     const offers = await prisma.offer.findMany({
-      include: { products: {select:{
-        name:true ,
-         category:{
-          select:{name:true}
-         },
-         type:true
-      }}, },
+      include: {
+        products: {
+          select: {
+            name: true,
+            category: {
+              select: { name: true },
+            },
+            type: true,
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
     });
-    console.log(offers)
+    console.log(offers);
     res.status(200).json(offers);
   } catch (error) {
     res
@@ -67,7 +71,15 @@ async function createOffer(req, res) {
         isPublish: isPublish === "true",
       },
       include: {
-        products: true,
+        products: {
+          select: {
+            name: true,
+            category: {
+              select: { name: true },
+            },
+            type: true,
+          },
+        },
       },
     });
     res.status(201).json({ message: "Offer created successfully", offer });
