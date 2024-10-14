@@ -104,9 +104,7 @@ const countAllPaymentsWithQ = async (req, res) => {
       (sum, payment) => {
         const details = JSON.parse(payment.details); // Parse details JSON
         const quantitySum = details.reduce((acc, item) => acc + item.q, 0); // Sum `q` field in details
-        console.log(
-          `Product Payment ID: ${payment.id}, Quantity Sum: ${quantitySum}`
-        );
+      
         return sum + quantitySum;
       },
       0
@@ -128,9 +126,7 @@ const countAllPaymentsWithQ = async (req, res) => {
       (sum, payment) => {
         const details = JSON.parse(payment.details); // Parse details JSON
         const quantitySum = details.reduce((acc, item) => acc + item.q, 0); // Sum `q` field in details
-        console.log(
-          `Offer Payment ID: ${payment.id}, Quantity Sum: ${quantitySum}`
-        );
+       
         return sum + quantitySum;
       },
       0
@@ -152,9 +148,7 @@ const countAllPaymentsWithQ = async (req, res) => {
       (sum, payment) => {
         const details = JSON.parse(payment.details); // Parse details JSON
         const quantitySum = details.reduce((acc, item) => acc + item.q, 0); // Sum `q` field in details
-        console.log(
-          `Online Product Payment ID: ${payment.id}, Quantity Sum: ${quantitySum}`
-        );
+     
         return sum + quantitySum;
       },
       0
@@ -176,9 +170,7 @@ const countAllPaymentsWithQ = async (req, res) => {
       (sum, payment) => {
         const details = JSON.parse(payment.details); // Parse details JSON
         const quantitySum = details.reduce((acc, item) => acc + item.q, 0); // Sum `q` field in details
-        console.log(
-          `Online Offer Payment ID: ${payment.id}, Quantity Sum: ${quantitySum}`
-        );
+       
         return sum + quantitySum;
       },
       0
@@ -284,7 +276,7 @@ const countPaymentsByProduct = async (req, res) => {
     // Return the result in the desired format
     res.status(200).json(result);
   } catch (error) {
-    console.log(error)
+
     console.error("Error counting payments by product:", error.message);
     res
       .status(500)
@@ -372,7 +364,7 @@ const countPaymentsByProductWithQuantity = async (req, res) => {
     // Return the result in the desired format
     res.status(200).json(result);
   } catch (error) {
-    console.log(error)
+
     console.error(
       "Error counting payments by product with quantity:",
       error.message

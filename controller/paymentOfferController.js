@@ -10,13 +10,17 @@ async function getAllPaymentOffers(req, res) {
     const paymentOffers = await prisma.paymentOffer.findMany({
       include: {
         offers: true,
-        order: true,
+        order: true,delevry:{
+          select:{
+            userName:true 
+          }
+        }
       },
       orderBy: {
         updatedAt: "desc",
       },
     });
-    console.log(paymentOffers);
+ 
     res.status(200).json(paymentOffers);
   } catch (error) {
     res
@@ -100,7 +104,7 @@ async function createPaymentOffer(req, res) {
     delevryId,
     isDelevry,
   } = req.body;
-console.log(isDelevry)
+
   const { error } = ValidateCreatePaymentOffer({
     offersIds,
     totalePrice,

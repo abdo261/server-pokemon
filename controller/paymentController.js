@@ -9,14 +9,18 @@ async function getAllPayments(req, res) {
   try {
     const payments = await prisma.payment.findMany({
       include: {
-        
+          delevry:{
+            select:{
+              userName:true
+            }
+          },
         order: true,
       },
       orderBy: {
         updatedAt: "desc",
       },
     });
-    console.log(payments)
+ 
     res.status(200).json(payments);
   } catch (error) {
     res

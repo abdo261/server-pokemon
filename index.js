@@ -29,8 +29,9 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(async (req, res, next) => {
+ 
   // Skip condition check for GET requests
-  const excludedRoutes = ["/api/auth/login","/api/days"];
+  const excludedRoutes = ["/api/auth/login","/api/days","/api/storage"];
   if (req.method === "GET" || excludedRoutes.includes(req.path)) {
     return next();
   }
@@ -43,7 +44,7 @@ app.use(async (req, res, next) => {
   });
 
   // If the latest day's `stopeAt` is not null, return error response
-  if (latestDay && latestDay.stopeAt !== null) {
+  if (latestDay && latestDay.stopeAt !== null && (req.path.startsWith('/api/payments') ||req.path.startsWith('/api/paymentsOffer') ) && req.method ==="POST" ) {
     return res.status(402).json({ message: "Demare la journee !!!" });
   }
 
@@ -51,7 +52,7 @@ app.use(async (req, res, next) => {
   next();
 });
 app.use((req, res, next) => {
-  const excludedRoutes = ["/api/auth/login"];
+  const excludedRoutes = ["/api/auth/login","/api/storage"];
 
   if (excludedRoutes.includes(req.path)) {
     return next();
@@ -117,7 +118,7 @@ io.on("connection", (socket) => {
   });
 });
 
-app.get("/storage", async (req, res) => {
+app.get("/api/storage", async (req, res) => {
   try {
     // Get the disk information
     const disks = await getDiskInfo();

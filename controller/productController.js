@@ -51,7 +51,7 @@ async function getProductById(req, res) {
 // Create a New Product
 async function createProduct(req, res) {
   const { name, price, categoryId, image, isPublish, type } = req.body;
-  console.log(req.body);
+
   const { error } = ValidateCreateProduct({
     name,
     price,
@@ -78,11 +78,9 @@ async function createProduct(req, res) {
     let imagePath = null;
     if (req.file) {
       imagePath = `/images/product/${req.file.filename}`;
-      console.log("File uploaded successfully:", imagePath); // Log success
-    } else {
-      console.log("No file uploaded."); // Log no file case
-    }
-    console.log(type);
+
+    } 
+
     // Create the product
     const product = await prisma.product.create({
       data: {
@@ -209,7 +207,7 @@ async function updateProduct(req, res) {
       product,
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       message: "Erreur lors de la mise à jour du produit: " + error.message,
     });

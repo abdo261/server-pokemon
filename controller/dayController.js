@@ -40,12 +40,26 @@ async function getDayById(req, res) {
     // Step 3: Find payments and payment offers within the date range
     const payments = await prisma.payment.findMany({
       where: { ...dateRange, isPayed: true },
-      include: { order: true },
+      include: {
+        order: true,
+        delevry: {
+          select: {
+            userName: true,
+          },
+        },
+      },
     });
 
     const paymentOffers = await prisma.paymentOffer.findMany({
       where: { ...dateRange, isPayed: true },
-      include: { order: true },
+      include: {
+        order: true,
+        delevry: {
+          select: {
+            userName: true,
+          },
+        },
+      },
     });
 
     // Step 4: Prepare a list of unique delivery IDs from the payments
@@ -73,10 +87,16 @@ async function getDayById(req, res) {
             createdAt: {
               gte: day.startAt,
               ...(day.stopeAt ? { lte: day.stopeAt } : {}),
-            },isPayed: true,
+            },
+            isPayed: true,
           },
           include: {
             order: true,
+            delevry: {
+              select: {
+                userName: true,
+              },
+            },
           },
         },
         orderOffers: {
@@ -84,10 +104,16 @@ async function getDayById(req, res) {
             createdAt: {
               gte: day.startAt,
               ...(day.stopeAt ? { lte: day.stopeAt } : {}),
-            },isPayed:true
+            },
+            isPayed: true,
           },
           include: {
-            order: true, // Include delivery details in orders as well
+            order: true,
+            delevry:{
+              select:{
+                userName:true
+              }
+            } // Include delivery details in orders as well
           },
         },
       },
@@ -100,6 +126,7 @@ async function getDayById(req, res) {
         paymentOffers: orderOffers, // Rename
       };
     });
+
     // Step 6: Return the day with payments, payment offers, and deliveries
     res.status(200).json({
       day,
@@ -108,6 +135,7 @@ async function getDayById(req, res) {
       deliveries: modifiedDeliveries,
     });
   } catch (error) {
+   
     res.status(500).json({
       message:
         "Erreur lors de la récupération de la journée : " + error.message,
@@ -164,7 +192,6 @@ async function updateDay(req, res) {
       day: updatedDay,
     });
   } catch (error) {
-    
     res.status(500).json({
       message: "Erreur lors de la mise à jour de la journée : " + error.message,
     });
@@ -244,7 +271,7 @@ const countAllPaymentsForDay = async (req, res) => {
     }
 
     const { startAt, stopeAt } = day;
-   
+
     // Prepare the filter for createdAt based on the presence of stopeAt
     const dateFilter = {
       gte: startAt, // Start date filter
@@ -424,7 +451,7 @@ const countAllPaymentsWithDayRange = async (req, res) => {
     const { startAt, stopeAt } = day; // Get day range from query parameters
 
     const dateFilter = getDateRangeFilter(startAt, stopeAt); // Apply the date range filter
-   
+
     // Count offline payments for products
     const countPaymentProductsOffline = await prisma.payment.count({
       where: {
@@ -560,11 +587,12 @@ const countAllPaymentsForDateRangeWithQ = async (req, res) => {
         const productName = item.name; // Get product name from details
         const categoryName = item.category; // Get category name from details
         const fullName = `${categoryName} ${productName}`; // Concatenate category and product names
-    
-        const capitalizedFullName = fullName.charAt(0).toUpperCase() + fullName.slice(1); // Capitalize first letter
-    
+
+        const capitalizedFullName =
+          fullName.charAt(0).toUpperCase() + fullName.slice(1); // Capitalize first letter
+
         const quantity = item.q;
-    
+
         if (!acc[capitalizedFullName]) {
           acc[capitalizedFullName] = {
             count: 0,
@@ -581,7 +609,8 @@ const countAllPaymentsForDateRangeWithQ = async (req, res) => {
     const offerAggregates = paymentsOffers.reduce((acc, payment) => {
       const details = JSON.parse(payment.details);
       details.forEach((item) => {
-        const offerName = item.name.charAt(0).toUpperCase() +item.name.slice(1) ;
+        const offerName =
+          item.name.charAt(0).toUpperCase() + item.name.slice(1);
         const quantity = item.q;
 
         if (!acc[offerName]) {

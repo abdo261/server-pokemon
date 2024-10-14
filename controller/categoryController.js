@@ -30,10 +30,10 @@ async function getAllCategoriesWithProduct(req, res) {
   try {
     const categories = await prisma.category.findMany({
       include: {
-        products:true
+        products: true,
       },
       orderBy: {
-        name:'asc'
+        name: "asc",
       },
     });
     res.status(200).json(categories);
@@ -52,7 +52,22 @@ async function getCategoryById(req, res) {
     const category = await prisma.category.findUnique({
       where: { id: parseInt(id) },
       include: {
-        products: true,
+        products: {
+          select: {
+            name: true,
+            imageFile: true,
+            isPublish: true,
+            price: true,
+            type: true,
+            createdAt: true,
+            id: true,
+            _count: {
+              select: {
+                payments: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!category) {
@@ -69,7 +84,6 @@ async function getCategoryById(req, res) {
 
 async function createCategory(req, res) {
   const { name, color } = req.body;
- 
 
   // Validate
   const { error } = ValidateCreateCategory({ name, color });
@@ -123,7 +137,7 @@ async function updateCategory(req, res) {
   const { id } = req.params;
   const { name, color, imageFile } = req.body; // imageFile can be 'null'
   const image = req.file;
- 
+
   const { error } = ValidateCreateCategory({ name, color });
   if (error) {
     return res.status(400).json(error);
@@ -208,7 +222,6 @@ async function updateCategory(req, res) {
       category: updatedCategory,
     });
   } catch (error) {
-
     res.status(500).json({
       message:
         "Erreur lors de la mise à jour de la catégorie: " + error.message,
@@ -301,7 +314,6 @@ const getCategoriesWithCount = async (req, res) => {
 
     res.json(categoriesWithCount);
   } catch (error) {
-  
     res.status(500).json({
       error: "Une erreur est survenue lors de la récupération des catégories.",
     });
@@ -315,5 +327,5 @@ module.exports = {
   deleteCategory,
   createManyCategories,
   getCategoriesWithCount,
-  getAllCategoriesWithProduct
+  getAllCategoriesWithProduct,
 };

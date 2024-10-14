@@ -21,7 +21,7 @@ async function getAllOffers(req, res) {
       },
       orderBy: { createdAt: "desc" },
     });
-    console.log(offers);
+ 
     res.status(200).json(offers);
   } catch (error) {
     res
@@ -51,7 +51,6 @@ async function getOfferById(req, res) {
 async function createOffer(req, res) {
   const { price, products, isPublish, name } = req.body; // Ensure products are included in the body
   const imagePath = req.file ? `/images/offer/${req.file.filename}` : null;
-  console.log(isPublish);
   const { error } = ValidateCreateOffer({
     price: parseFloat(price),
     products,
@@ -84,7 +83,7 @@ async function createOffer(req, res) {
     });
     res.status(201).json({ message: "Offer created successfully", offer });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({ message: "Error creating offer: " + error.message });
   }
 }
@@ -164,7 +163,7 @@ async function updateOffer(req, res) {
       offer: updatedOffer,
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({ message: "Error updating offer: " + error.message });
   }
 }

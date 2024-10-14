@@ -3,7 +3,7 @@ const path = require("path");
 
 const getImageCategoryByName = (req, res) => {
   const nameCategory = req.params.name;
-  console.log(nameCategory);
+  
 
   // Define the correct path to the images directory
   const imagePath = path.join(
@@ -14,8 +14,6 @@ const getImageCategoryByName = (req, res) => {
     nameCategory // Use the full name with extension
   );
 
-  // Log the full image path for debugging
-  console.log("Image path:", imagePath);
 
   // Check if the file exists
   fs.stat(imagePath, (err) => {
@@ -38,7 +36,7 @@ const getImageCategoryByName = (req, res) => {
 };
 const getImageProductByName = (req, res) => {
   const nameCategory = req.params.name;
-  console.log(nameCategory);
+
 
   // Define the correct path to the images directory
   const imagePath = path.join(
@@ -49,14 +47,13 @@ const getImageProductByName = (req, res) => {
     nameCategory // Use the full name with extension
   );
 
-  // Log the full image path for debugging
-  console.log("Image path:", imagePath);
+
 
   // Check if the file exists
   fs.stat(imagePath, (err) => {
     if (err) {
       if (err.code === "ENOENT") {
-        console.log(err)
+     
         return res.status(404).json({ message: "Image not found" });
       }
       // Other errors
@@ -73,7 +70,7 @@ const getImageProductByName = (req, res) => {
 };
 const getImageOfferByName = (req, res) => {
   const nameCategory = req.params.name;
-  console.log(nameCategory);
+
 
   // Define the correct path to the images directory
   const imagePath = path.join(
@@ -85,13 +82,13 @@ const getImageOfferByName = (req, res) => {
   );
 
   // Log the full image path for debugging
-  console.log("Image path:", imagePath);
+
 
   // Check if the file exists
   fs.stat(imagePath, (err) => {
     if (err) {
       if (err.code === "ENOENT") {
-        console.log(err)
+     
         return res.status(404).json({ message: "Image not found" });
       }
       // Other errors
@@ -112,7 +109,7 @@ async function deleteImage(imagePath) {
   try {
     if (fs.existsSync(fullImagePath)) {
       fs.unlinkSync(fullImagePath); 
-      console.log(`Deleted file: ${fullImagePath}`);
+   
     }
   } catch (error) {
     console.error(`Error deleting image: ${error.message}`);
@@ -121,7 +118,7 @@ async function deleteImage(imagePath) {
 async function renameImage(oldPath, newPath) {
   const oldFilePath = path.join(__dirname,'..', oldPath); 
   const newFilePath = path.join(__dirname,'..', newPath); 
-console.log('oldFilePath', oldFilePath)
+
   return new Promise((resolve, reject) => {
     fs.rename(oldFilePath, newFilePath, (err) => {
       if (err) {
